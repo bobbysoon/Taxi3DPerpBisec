@@ -6,6 +6,9 @@
 * December 2012
 */
 
+//	dec. 2015: used ray caster for taxi-metric stuff. All ugliness credit to bobbysoon
+//	https://github.com/bobbysoon/Taxi3DPerpBisec
+
 #ifdef GL_ES
 precision highp float;
 #endif
