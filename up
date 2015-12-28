@@ -9,6 +9,6 @@ git add ./*.txt
 git commit -m "$(date +%s)"
 git remote add origin https://github.com/bobbysoon/Taxi3DPerpBisec.git
 git remote -v
-git push origin master $1
+git push -f origin master $1
 
 find . -name "*.pyc" -type f|xargs rm -f
