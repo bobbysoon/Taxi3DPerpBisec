@@ -9,7 +9,6 @@ from OpenGL.GL import *
 import numpy
 
 class Window:
-	hasFocus=False
 	window = sf.RenderWindow(sf.VideoMode(800, 600), "pySFML - OpenGL", sf.Style.DEFAULT, sf.ContextSettings(32))
 	window.vertical_synchronization = True
 	window.framerate_limit=15
@@ -37,19 +36,15 @@ class Window:
 				Window.size= event.size
 				glViewport(0, 0, event.width, event.height )
 
-			if event == sf.FocusEvent:
-				Window.hasFocus= event.gained # in theory, anyway
+			if event == sf.MouseWheelEvent:
+				if event.delta<0: Window.scale*= (Window.scaleStep+1)/Window.scaleStep
+				if event.delta>0: Window.scale*= Window.scaleStep/(Window.scaleStep+1)
 
-			if True or Window.hasFocus: # #canHazFocusEvent?
-				if event == sf.MouseWheelEvent:
-					if event.delta>0: Window.scale*= (Window.scaleStep+1)/Window.scaleStep
-					if event.delta<0: Window.scale*= Window.scaleStep/(Window.scaleStep+1)
-
-				if event == sf.KeyEvent:
-					if event.code == sf.Keyboard.ESCAPE:
-						Window.window.close()
-					if event.code == sf.Keyboard.L_SHIFT:
-						Window.timeStep= 1.0 if event.pressed else 0.0
+			if event == sf.KeyEvent:
+				if event.code == sf.Keyboard.ESCAPE:
+					Window.window.close()
+				if event.code == sf.Keyboard.L_SHIFT:
+					Window.timeStep= 1.0 if event.pressed else 0.0
 
 		return Window.window.is_open
 
@@ -59,14 +54,16 @@ class Window:
 
 	clock=sf.Clock()
 	@staticmethod
-	def Input(lookCurve=1.4):
+	def Input():
 		t=Window.clock.restart().seconds
 		""" The actual camera setting cycle """
 		wc= Window.size/2
 		mouse_dx,mouse_dy = (Window.getMousePos()-wc)*t
-		mouse_dx= copysign(abs(mouse_dx)**lookCurve,mouse_dx)
-		mouse_dy= copysign(abs(mouse_dy)**lookCurve,mouse_dy)
+		mouse_dx= copysign(abs(mouse_dx),mouse_dx)
+		mouse_dy= copysign(abs(mouse_dy),mouse_dy)
 		Window.setMousePos(wc)
+		return mouse_dx,mouse_dy
+
 
 		buffer = glGetDoublev(GL_MODELVIEW_MATRIX)
 		c = (-1 * numpy.mat(buffer[:3,:3]) * numpy.mat(buffer[3,:3]).T).reshape(3,1)
@@ -93,7 +90,6 @@ class Window:
 			glTranslate(x*m[0],x*m[4],x*m[8])
 			glTranslate(y*m[1],y*m[5],y*m[9])
 
-		return mouse_dx,mouse_dy
 
 	@staticmethod
 	def WASD():
