@@ -111,8 +111,8 @@ Camera cam = Camera(rotationMatrix*vec3(0.0, -1.5, focusDistance),
 float rrad = 1.35;
 float rspeed = 0.5;
 
-Sphere sphere1 = Sphere(sphere1Pos, 1.0, vec4(0.7, 0.9, 0.0, 1.0));
-Sphere sphere2 = Sphere(sphere2Pos, 1.0, vec4(1.0, 0.2, 0.0, 1.0));
+Sphere sphere1 = Sphere(sphere1Pos, .1, vec4(0.7, 0.9, 0.0, 1.0));
+Sphere sphere2 = Sphere(sphere2Pos, .1, vec4(1.0, 0.2, 0.0, 1.0));
 
 float reflection_factor = 0.25;
 vec4 specularColor = vec4(1.0);
