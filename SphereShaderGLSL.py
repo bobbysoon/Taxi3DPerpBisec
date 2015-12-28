@@ -30,7 +30,7 @@ while Window.isOpen():
 		glMatrixMode(GL_MODELVIEW);glPushMatrix();glLoadIdentity()
 		glMatrixMode(GL_PROJECTION);glPushMatrix();glLoadIdentity()
 
-		glRectf(-1,-1,1,1)
+		glRectf(-1,-1,1,1) # the only actual geometry drawn. AKA, "Two triangles, one shader"
 
 		glPopMatrix();glMatrixMode(GL_MODELVIEW);glPopMatrix()
 
