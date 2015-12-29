@@ -34,8 +34,8 @@ while Window.isOpen():
 	glLineWidth(2.5)
 	#glColor3f(1.0, 0.0, 0.0)
 	glBegin(GL_LINES)
-	glVertex3f(*sphere1Pos)		# fixme
-	glVertex3f(*sphere2Pos)
+	glVertex3f(-1,-1,-1)		# fixme
+	glVertex3f(1,1,1)
 	glEnd()
 
 	glPopMatrix();glMatrixMode(GL_MODELVIEW);glPopMatrix()
