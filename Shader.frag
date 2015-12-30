@@ -118,7 +118,8 @@ int Region(vec3 p) {return mDist(p,sphere1.pos)<mDist(p,sphere2.pos)?1:2;}
 
 
 //	for point p which lies virtually equidistant between spheres (in taxi metric),
-// sample points around it using 3x3x3 spread
+// sample points around it using 3x3x3 spread.
+// usage, python equiv: a=[v for v in spread if Region(p+v)==Region(camPos)];norm=sum(a)/len(a)
 #define spread_sz 26
 vec3 spread[spread_sz] = vec3[](
 	vec3(-1.0,-1.0,-1.0),
@@ -164,7 +165,7 @@ void RayCast(vec3 rOrig, vec3 rDir) {
 	vec3 p,cp= (sphere1.pos+sphere2.pos)/2.0;
 	float maxDist= max(length(rOrig-sphere1.pos),length(rOrig-sphere2.pos))*2.0;
 	float sphDist= length(sphere1.pos-sphere2.pos);
-	float l, lMin=0.0,lMax= length(rOrig-cp)*2;
+	float l, lMin=0.0,lMax= length(rOrig-cp)*2; // hence the far clip
 	int r, r1=Region(rOrig+rDir*lMin), r2=Region(rOrig+rDir*lMax);
 	
 	float brightness=0.0;
@@ -184,7 +185,8 @@ void RayCast(vec3 rOrig, vec3 rDir) {
 	} else p=cp;
 
 	gl_FragColor= vec4(vec3(brightness),1.0);
-	//	draw centroids
+
+	//	draw nearest centroid
 	float d, sd1= length(rOrig-sphere1.pos) , sd2= length(rOrig-sphere2.pos);
 	if ( length(rOrig-sphere1.pos) < length(rOrig-sphere2.pos) )
 		d= dot(normalize(sphere1.pos-rOrig),rDir);

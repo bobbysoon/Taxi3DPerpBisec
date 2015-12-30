@@ -6,3 +6,7 @@ Really shoddy, what I did, as graphical quality goes, but it lets you see the ge
 Uses python-sfml, PyOpenGL, & numpy
 
 of the shading of the perpendicular bisecting plane, TaxiNorm is the function. It point samples a 3x3x3 grid around the ray-plane intersect, and averages the vectors on the cam's side of the plane. Works well enough for visualizing, but it's probably where the circular artifacts are coming from.
+
+Along the 3 world axi, wierd clipping occurs because the linear point sampling intervals misses the solid portion.
+
+IJKL rotates centroid positions
