@@ -102,8 +102,9 @@ mat3 rotationMatrix=	RotationMatrix(vec3(0,1,0), TWO_PI*mouse.x-PI)*
 						RotationMatrix(vec3(1,0,0), TWO_PI*mouse.y-PI);
 
 #define focusDistance 5.0
-Camera cam = Camera(rotationMatrix*vec3(0.0, -1.5, focusDistance),
-					vec3(0.0, 0.5, 1.0),
+vec3 pos= rotationMatrix*vec3(0.0, -1.5, focusDistance);
+Camera cam = Camera(pos,
+					normalize(pos)*.5,
 					10.0*zoom);
 
 Sphere sphere1 = Sphere(sphere1Pos, .5, vec4(0.7, 0.9, 0.0, 1.0));
@@ -151,7 +152,7 @@ vec3 TaxiNorm(vec3 p) {
 	int nc=0,r=Region(p);
 	vec3 norm=vec3(0.0,0.0,0.0);
 	for (int i=0;i<spread_sz;i++) {
-		if (Region(p+spread[i]) != r) {
+		if (Region(p+spread[i]*EPS) != r) {
 			norm+= spread[i];
 			nc+=1;
 		}
@@ -160,19 +161,15 @@ vec3 TaxiNorm(vec3 p) {
 }
 
 void RayCast(vec3 rOrig, vec3 rDir) {
-	vec3 cp= (sphere1.pos+sphere2.pos)/2.0;
+	vec3 p,cp= (sphere1.pos+sphere2.pos)/2.0;
 	float maxDist= max(length(rOrig-sphere1.pos),length(rOrig-sphere2.pos))*2.0;
 	float sphDist= length(sphere1.pos-sphere2.pos);
-	float l, lMin=0.0,lMax= length(cam.pos-cp);
+	float l, lMin=0.0,lMax= length(rOrig-cp)*2;
 	int r, r1=Region(rOrig+rDir*lMin), r2=Region(rOrig+rDir*lMax);
-	vec3 p;
-	while (r1==r2 && lMax<1024.0) {
-		lMax*=2.0;
-		r2=Region(rOrig+rDir*lMax);
-	}
+	
 	float brightness=0.0;
 	if (r1!=r2) {
-		while (lMax-lMin>1e-02) {
+		while (lMax-lMin>1e-04) {
 			l= (lMin+lMax)/2.0;
 			p= rOrig+rDir*l;
 			r= Region(p);
@@ -184,20 +181,20 @@ void RayCast(vec3 rOrig, vec3 rDir) {
 		if (r==r1) n*=-1.0;
 
 		brightness= dot(rDir,-n);
+	} else p=cp;
+
+	gl_FragColor= vec4(vec3(brightness),1.0);
+	//	draw centroids
+	float d, sd1= length(rOrig-sphere1.pos) , sd2= length(rOrig-sphere2.pos);
+	if ( length(rOrig-sphere1.pos) < length(rOrig-sphere2.pos) )
+		d= dot(normalize(sphere1.pos-rOrig),rDir);
+	else
+		d= dot(normalize(sphere2.pos-rOrig),rDir);
+	if (d>.9999) {
+		gl_FragColor.r= min(.5,gl_FragColor.r);
+		gl_FragColor.g= max(.5,gl_FragColor.g);
+		gl_FragColor.b= max(.5,gl_FragColor.b);
 	}
-
-	float pd= length(rOrig-p);
-	float sr1= sphere1.rad-pointLineDist( sphere1.pos , rOrig,rOrig+rDir );
-	float sd1= length(rOrig-sphere1.pos);
-	float sr2= sphere2.rad-pointLineDist( sphere2.pos , rOrig,rOrig+rDir );
-	float sd2= length(rOrig-sphere2.pos);
-
-	vec3 col= r==r1?sphere1.col.xyz:sphere2.col.xyz;
-	gl_FragColor= vec4(col*brightness/length(p-rOrig),1);
-	
-	if (sr1>0.0) gl_FragColor.xyz+= sphere1.col.xyz*sr1*(sd1<pd?1:.5);
-	if (sr2>0.0) gl_FragColor.xyz+= sphere2.col.xyz*sr2*(sd2<pd?1:.5);
-	gl_FragColor.xyz+=.1;
 }
 
 void main( void ) {
